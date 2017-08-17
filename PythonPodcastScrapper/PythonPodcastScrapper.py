@@ -3,8 +3,8 @@ import sys
 import requests
 import fnmatch
 from bs4 import BeautifulSoup, SoupStrainer
-from progressbar import progressbar
-
+from progressbar2 import progressbar
+from time import sleep
 
 def urrllister(url):
     r = requests.get(url)
@@ -43,3 +43,45 @@ def download(fname, url, verbose=False):
         current_size = os.path.getsize(fname)
         #if the file exists, then download only the reminder.
         url_obj.addheader("Range", "bytes=%s-" % (current_size))
+    else:
+        output = open(fname, "wb")
+    
+    web_page = url_obj.open(url)
+
+    if verbose:
+        for key, value in web_page.headers.items():
+            sys.stdout.writer("{} = {}\n".format(key, value))
+
+    #if we already have teh whole file, there is no need to download it again.
+    num_bytes = 0
+    full_size = int(web_page.headers['Content-Length'])
+    if full_size == current_size:
+        msg = "File ({}) was already downloaded from URL ({})".format
+        sys.stdout.write(msg(fname, url))
+    elif full_size == 0:
+        sys.stdout.write("Full file size equal zero!"
+                         "Try again later or check the file.")
+    else:
+        if verbose:
+            msg = "Downloading {:d} more bytes".format
+            sys.stdout.write(msg(full_size - current_size))
+        pbar = ProgressBar(maxval=full_size)
+        pbar.start()
+        while True:
+            try:
+                data = web_page.read(8192)
+            except ValueError:
+                break
+            if not data:
+                break
+            output.write(data)
+            num_bytes = num_bytes +len(data)
+            pbar.update(num_bytes)
+        pbar.finish()
+    web_page.close()
+    output.close()
+
+    if verbose:
+        msg = "Downloaded {} bytes from {}".format
+        sys.stdout.write(msg(num_bytes, web_page.url))
+
