@@ -2,9 +2,13 @@ import os
 import sys
 import requests
 import fnmatch
+import urllib.request
+
 from bs4 import BeautifulSoup, SoupStrainer
-from progressbar2 import progressbar
+from progressbar2 import progressbar # modules
 from time import sleep
+
+#Reference > https://ocefpaf.github.io/python4oceanographers/blog/2015/07/06/podcasts/
 
 def urrllister(url):
     r = requests.get(url)
@@ -85,3 +89,16 @@ def download(fname, url, verbose=False):
         msg = "Downloaded {} bytes from {}".format
         sys.stdout.write(msg(num_bytes, web_page.url))
 
+pow= range(0, 101)
+uri = ("https://dfkfj8j276wwv.cloudfront.net/episodes/c59ffe3e-4026-487f-a0d4-be8e3e2a3c37/3941082f84c9548e7c531014992a3c1095480aeb8aa5abb83966bbadf98f39d930d6d77c0fb5eac6c52bab3cdfd5c0bea992d9cf0f2fee7e4bb5590ee78c93c5/Harmontown%20Ep%20254.mp3")
+
+for podcast in podcasts:
+    url = uri(podcast)
+    print(uurl + '\n')
+    try:
+        fname = url.split('/')[-1]
+        download(fname, url, verbose=True)
+    except HTTPError:
+         print('Cannot download {}\n'.format(url))
+    print('\n')
+    sleep(2)
